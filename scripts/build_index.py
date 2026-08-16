@@ -1,7 +1,5 @@
 import os
 import sys
-
-# Add project root directory to Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import glob
@@ -28,10 +26,8 @@ def build_index():
     if not all_chunks:
         return False, "Failed to extract text chunks from uploaded PDFs."
 
-    # 100% Free Local Embeddings
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-    # Persist in ChromaDB
     Chroma.from_documents(
         documents=all_chunks,
         embedding=embeddings,

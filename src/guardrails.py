@@ -20,7 +20,6 @@ def enforce_guardrails(query: str, response: str, context: str) -> RAGResponse:
             citations=[]
         )
 
-    # Basic grounding evaluation: verify if response keywords match context
     context_words = set(context.lower().split())
     response_words = set(response.lower().split())
     

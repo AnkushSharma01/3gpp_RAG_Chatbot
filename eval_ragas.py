@@ -32,7 +32,6 @@ def run_evaluation():
 
     print("Calculating RAGAS metrics using Mistral & HuggingFace...")
 
-    # Using free Mistral LLM and local HuggingFace embeddings
     eval_llm = ChatMistralAI(model="mistral-small-latest", temperature=0.0)
     eval_embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 

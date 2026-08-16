@@ -12,7 +12,6 @@ def parse_3gpp_pdf(pdf_path: str) -> list[Document]:
     """
     documents = []
 
-    # Extract filename safely across Windows and POSIX systems
     file_name = os.path.basename(pdf_path)
 
     with pdfplumber.open(pdf_path) as pdf:
@@ -25,7 +24,6 @@ def parse_3gpp_pdf(pdf_path: str) -> list[Document]:
                 if not table:
                     continue
 
-                # Clean newline characters within cells to maintain valid markdown table formatting
                 clean_table = [
                     [cell.replace("\n", " ") if cell else "" for cell in row]
                     for row in table
@@ -42,10 +40,8 @@ def parse_3gpp_pdf(pdf_path: str) -> list[Document]:
                     + "\n\n"
                 )
 
-            # Combine page text and Markdown tables
             raw_page_content = text + table_md
 
-            # Extract 3GPP specific clause numbers and enrich metadata
             metadata, tagged_content = extract_3gpp_metadata_and_tag(
                 file_name, raw_page_content
             )

@@ -11,13 +11,11 @@ def load_advanced_retriever():
     """Loads ChromaDB and BM25 retrievers using local HuggingFace embeddings."""
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-    # Load vector store retriever
     vectorstore = Chroma(
         persist_directory=CHROMA_PATH, embedding_function=embeddings
     )
     dense_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
-    # Reconstruct documents for sparse BM25 retriever
     all_docs = vectorstore.get()
     documents = (
         [

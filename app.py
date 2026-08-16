@@ -13,7 +13,6 @@ st.set_page_config(page_title="3GPP Telecom Assistant", page_icon="📡", layout
 st.title("Grounded 3GPP Telecom RAG Assistant")
 st.caption("Powered by Mistral AI, Hybrid Search & Guardrails")
 
-# ----------------- SIDEBAR -----------------
 with st.sidebar:
     st.header("Upload 3GPP Documents")
     uploaded_files = st.file_uploader("Upload 3GPP Spec PDFs", type=["pdf"], accept_multiple_files=True)
@@ -36,9 +35,8 @@ with st.sidebar:
                 else:
                     st.error(msg)
 
-# Validations
 if not os.getenv("MISTRAL_API_KEY"):
-    st.warning("⚠️ `MISTRAL_API_KEY` missing in `.env` file!")
+    st.warning(" `MISTRAL_API_KEY` missing in `.env` file!")
 
 if not os.path.exists("./chroma_db") or not os.listdir("./chroma_db"):
     st.error("Vector database empty! Please upload a PDF in the sidebar and click 'Rebuild Vector Database Index'.")
@@ -54,7 +52,6 @@ except Exception as e:
     st.error(f"System Initialization Error: {e}")
     st.stop()
 
-# ----------------- MAIN CHAT UI -----------------
 query = st.text_input("Ask a 3GPP Question (e.g., 'What are the main functions of AMF in 5G NR?'):")
 
 if query:

@@ -30,7 +30,6 @@ def parse_3gpp_pdf(pdf_path: str):
     if not docs:
         return []
 
-    # Chunk text into retrieval-friendly sizes
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=600, chunk_overlap=100
     )

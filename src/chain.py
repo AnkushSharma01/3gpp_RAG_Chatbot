@@ -7,7 +7,6 @@ from src.guardrails import enforce_guardrails
 def create_rag_chain(retrievers):
     dense_retriever, bm25_retriever = retrievers
 
-    # Free Mistral AI Model (Requires MISTRAL_API_KEY in .env)
     llm = ChatMistralAI(
         model="mistral-small-latest",
         temperature=0.0,
@@ -17,11 +16,9 @@ def create_rag_chain(retrievers):
     def rag_chain(inputs: dict):
         query = inputs["question"]
 
-        # Hybrid Retrieval
         dense_docs = dense_retriever.invoke(query)
         bm25_docs = bm25_retriever.invoke(query) if bm25_retriever else []
 
-        # Deduplicate retrieved documents
         seen = set()
         combined_docs = []
         for doc in dense_docs + bm25_docs:
@@ -56,7 +53,6 @@ def create_rag_chain(retrievers):
             {"context": context_str, "question": query}
         )
 
-        # Apply strict guardrails validation
         validated_ans = enforce_guardrails(
             query=query, response=raw_response.content, context=context_str
         )
