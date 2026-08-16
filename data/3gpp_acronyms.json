@@ -1,0 +1,9 @@
+{
+  "AMF": "Access and Mobility Management Function",
+  "UPF": "User Plane Function",
+  "SMF": "Session Management Function",
+  "gNB": "Next Generation Node B",
+  "RRC": "Radio Resource Control",
+  "PDU": "Protocol Data Unit",
+  "BWP": "Bandwidth Part"
+}
