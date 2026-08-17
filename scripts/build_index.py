@@ -5,7 +5,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import glob
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
-from src.clause_parser import parse_3gpp_pdf
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from src.table_ingester import parse_3gpp_pdf 
 
 DATA_DIR = "./data/3gpp_specs"
 CHROMA_PATH = "./chroma_db"
@@ -18,13 +19,16 @@ def build_index():
     if not pdf_files:
         return False, "No PDF files found in data/3gpp_specs."
 
-    all_chunks = []
+    all_pages = []
     for pdf_path in pdf_files:
-        chunks = parse_3gpp_pdf(pdf_path)
-        all_chunks.extend(chunks)
+        pages = parse_3gpp_pdf(pdf_path)
+        all_pages.extend(pages)
 
-    if not all_chunks:
+    if not all_pages:
         return False, "Failed to extract text chunks from uploaded PDFs."
+
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
+    all_chunks = text_splitter.split_documents(all_pages)
 
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 

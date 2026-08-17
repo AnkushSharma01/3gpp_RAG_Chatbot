@@ -1,34 +1,33 @@
-from pydantic import BaseModel, Field
-from typing import List
+import re
+from src.schemas import GroundedAnswer 
 
-class RAGResponse(BaseModel):
-    answer: str = Field(description="The response generated for the user query.")
-    is_fully_grounded: bool = Field(description="True if the answer is completely supported by retrieved context.")
-    confidence_score: float = Field(description="Confidence score between 0.0 and 1.0.")
-    citations: List[str] = Field(default_factory=list, description="List of 3GPP document citations.")
 
-def enforce_guardrails(query: str, response: str, context: str) -> RAGResponse:
+def enforce_guardrails(query: str, response: str, context: str) -> GroundedAnswer:
     """
-    Validates LLM response against retrieved context to guarantee groundedness 
-    and prevent hallucinations.
+    Validates LLM response against retrieved context to guard against
+    hallucinations, and extracts real citations from the tagged context.
     """
     if not context or "insufficient" in response.lower():
-        return RAGResponse(
+        return GroundedAnswer(
             answer="Insufficient context found in 3GPP standards to answer this query accurately.",
             is_fully_grounded=False,
             confidence_score=0.0,
-            citations=[]
+            citations=[],
         )
 
     context_words = set(context.lower().split())
     response_words = set(response.lower().split())
-    
-    overlap = len(response_words.intersection(context_words)) / max(len(response_words), 1)
-    is_grounded = overlap > 0.3 or len(context) > 100
 
-    return RAGResponse(
+    overlap = len(response_words.intersection(context_words)) / max(len(response_words), 1)
+
+    is_grounded = overlap > 0.3
+
+    citation_matches = re.findall(r"\[Spec:\s*([^\|\]]+)\|\s*Clause:\s*([^\]]+)\]", context)
+    citations = list({f"{s.strip()} — Clause {c.strip()}" for s, c in citation_matches})
+
+    return GroundedAnswer(
         answer=response,
         is_fully_grounded=is_grounded,
         confidence_score=round(min(overlap * 1.5, 0.98), 2),
-        citations=["3GPP TS Context"]
+        citations=citations,
     )
